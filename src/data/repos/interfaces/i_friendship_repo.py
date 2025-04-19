@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Sequence
+from typing import Iterable
 
 from ...entities import Friendship, User
 
@@ -9,7 +9,7 @@ class IFriendshipRepo(ABC):
         pass
 
     @abstractmethod
-    async def get_all(self, user: User) -> Sequence[Friendship]:
+    async def get_all(self, user: User) -> Iterable[Friendship]:
         pass
 
     @abstractmethod

@@ -1,19 +1,19 @@
 from abc import ABC, abstractmethod
-from typing import Sequence
+from typing import Iterable, Optional
 
 from ...entities import FriendshipRequest, Friendship, User
 
 class IFriendshipRequestRepo(ABC):
     @abstractmethod
-    async def get_unordered(self, friendship: Friendship) -> FriendshipRequest:
+    async def get_unordered(self, friendship: Friendship) -> Optional[FriendshipRequest]:
         pass
 
     @abstractmethod
-    async def get_all_incoming(self, user: User) -> Sequence[FriendshipRequest]:
+    async def get_all_incoming(self, user: User) -> Iterable[FriendshipRequest]:
         pass
 
     @abstractmethod
-    async def add(self, friendship_request: FriendshipRequest) -> None:
+    async def add(self, friendship_request: FriendshipRequest) -> int:
         pass
 
     @abstractmethod
@@ -21,6 +21,6 @@ class IFriendshipRequestRepo(ABC):
         pass
 
     @abstractmethod
-    async def expire(self, user: User) -> int:
+    async def cleanup(self) -> int:
         pass
 
