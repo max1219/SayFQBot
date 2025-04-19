@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class DailyLimits:
     user_id: int
     friendship_requests: int
