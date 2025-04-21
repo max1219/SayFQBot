@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from ...entities import DailyLimits, User
 
 class IDayLimitsRepo(ABC):
     @abstractmethod
-    async def get_by_user(self, user: User) -> Optional[DailyLimits]:
+    async def get_by_user(self, user: User) -> DailyLimits:
         pass
 
     @abstractmethod

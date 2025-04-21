@@ -1,5 +1,3 @@
-from typing import Iterable, Optional
-
 from aiosqlite import Cursor, Row
 
 from .. import IDayLimitsRepo
@@ -20,11 +18,9 @@ class DailyLimitsAioSQLiteRepo(IDayLimitsRepo):
                 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE RESTRICT ON UPDATE RESTRICT)
             ''')
 
-    async def get_by_user(self, user: User) -> Optional[DailyLimits]:
+    async def get_by_user(self, user: User) -> DailyLimits:
         await self._cursor.execute("SELECT * FROM daily_limits WHERE user_id = ?", (user.id,))
         row: Row = await self._cursor.fetchone()
-        if row is None:
-            return None
         return DailyLimits(user_id=row['user_id'], friendship_requests=row['friendship_requests'],
                            fqs=row['fqs'], fqs_all=row['fqs_all'])
 
