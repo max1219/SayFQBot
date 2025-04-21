@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Optional
 
 from aiosqlite import Cursor, Row
 
@@ -20,14 +20,14 @@ class FriendshipAioSQLiteRepo(IFriendshipRepo):
                 FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE RESTRICT ON UPDATE RESTRICT)
             ''')
 
-    async def is_friends(self, friendship: Friendship) -> bool:
-        await self._cursor.execute("SELECT EXISTS(SELECT 1 FROM friendship "
+    async def get_unordered(self, friendship: Friendship) -> Optional[Friendship]:
+        await self._cursor.execute("SELECT * FROM friendship "
                                    "    WHERE user1_id = ? AND user2_id = ?"
-                                   "       OR user2_id = ? AND user1_id = ?)",
+                                   "       OR user2_id = ? AND user1_id = ?",
                                    (friendship.user1_id, friendship.user2_id,
                                     friendship.user1_id, friendship.user2_id))
         row: Row = await self._cursor.fetchone()
-        return row[0] == 1
+        return Friendship(row['user1_id'], row['user2_id'])
 
     async def get_all(self, user: User) -> Iterable[Friendship]:
         await self._cursor.execute("SELECT * FROM friendship WHERE user1_id = ? OR user2_id = ?",

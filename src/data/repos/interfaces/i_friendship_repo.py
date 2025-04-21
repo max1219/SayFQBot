@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Iterable
+from typing import Iterable, Optional
 
 from ...entities import Friendship, User
 
 class IFriendshipRepo(ABC):
     @abstractmethod
-    async def is_friends(self, friendship: Friendship) -> bool:
+    async def get_unordered(self, friendship: Friendship) -> Optional[Friendship]:
         pass
 
     @abstractmethod
