@@ -1,7 +1,5 @@
-import asyncio
-
 from src.domain.services.implementations.friendship_service import FriendshipService
-from src.infrastructure.database.repositories.in_memory import *
+from src.infrastructure.database.repositories.sqlite import *
 from src.domain.services.implementations.fq_service import FqService
 from src.domain.services.implementations.single_fq_limits_service import SingleFqLimitsService
 from src.domain.services.implementations.constant_fq_limit_provider import ConstantFqLimitProvider
@@ -11,11 +9,14 @@ from src.presentation.console_demo.message_senders import ConsoleFriendshipMessa
 
 
 async def start_demo():
-    lock = asyncio.Lock()
-    user_repo = InMemoryUserRepo(lock)
-    friendship_repo = InMemoryFriendshipRepo(lock)
-    friendship_request_repo = InMemoryFriendshipRequestRepo(lock)
-    fq_repo = InMemoryFqRepo(lock)
+    fq_repo: SqliteFqRepo
+    user_repo: SqliteUserRepo
+    friendship_repo: SqliteFriendshipRepo
+    friendship_request_repo: SqliteFriendshipRequestRepo
+
+    fq_repo, user_repo, friendship_repo, friendship_request_repo = (
+        await ensure_created_and_get_repos("infrastructure/database/db.sqlite"))
+
     friendship_message_sender = ConsoleFriendshipMessageSender()
     fq_message_sender = ConsoleFqMessageSender()
     friendship_service = FriendshipService(friendship_repo, friendship_request_repo, user_repo,
