@@ -1,0 +1,2 @@
+from .console_friendship_message_sender import ConsoleFriendshipMessageSender
+from .console_fq_message_sender import ConsoleFqMessageSender

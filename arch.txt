@@ -1,0 +1,44 @@
+Основной текст будет браться из сервисов. Будут разные message sender-ы (или один? Несколько, один под fq, один под friendship), интерфейсы в домене, реализации в презентации.
+Fq sender будет использовать в себе сервис получения фразы (через интерфейс)
+
+Application Layer (точка входа)
+├── main.py - инициализация, DI контейнер, запуск
+└── di.py - настройка зависимостей
+
+Presentation Layer (адаптеры для бота)
+├── handlers/
+│   ├── commands/ - команды (/start, /help)
+│   ├── messages/ - обработка сообщений
+│   ├── callbacks/ - inline-кнопки
+│   └── errors/ - обработка ошибок
+├── keyboards/ - формирование интерфейса
+└── states/ - FSM состояния (если используете)
+
+Domain Layer (ядро приложения)
+├── entities/ - бизнес-сущности
+├── services/ - интерфейсы бизнес-логики
+│   ├── interfaces/ - IUserService, IOrderService
+│   └── implementations/ - UserService, OrderService
+├── dto/ - Request/Response объекты
+└── exceptions/ - бизнес-исключения
+
+Infrastructure Layer (внешние системы)
+├── database/
+│   ├── repositories/ - реализация репозиториев
+│   ├── models.py - ORM модели (отдельно от Entities!)
+│   └── session.py - управление сессиями
+├── external_api/ - клиенты внешних API
+├── cache/ - работа с кэшем
+└── storage/ - работа с файлами
+
+
+domain/
+├── entities/
+├── repositories/          # ← ИНТЕРФЕЙСЫ репозиториев
+│   ├── user_repository.py
+│   ├── order_repository.py
+│   └── __init__.py
+├── services/
+│   ├── interfaces/
+│   └── implementations/
+└── dto/
