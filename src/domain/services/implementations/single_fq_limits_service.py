@@ -1,7 +1,7 @@
 from src.domain.repositories import IFqRepo
 
-from .. import IFqLimitsService
-from ..interfaces.i_total_fq_limit_provider import ITotalFqLimitProvider
+from src.domain.services import IFqLimitsService
+from src.domain.services.interfaces.i_total_fq_limit_provider import ITotalFqLimitProvider
 
 
 class SingleFqLimitsService(IFqLimitsService):

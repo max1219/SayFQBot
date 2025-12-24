@@ -4,7 +4,7 @@ from src.domain.repositories import IFriendshipRepo, IFriendshipRequestRepo, IUs
 from src.domain.dto.responces.friendship import RequestFriendshipStatus, AcceptFriendshipStatus
 from src.domain.message_senders import IFriendshipMessageSender
 
-from .. import IFriendshipService
+from src.domain.services import IFriendshipService
 
 class FriendshipService(IFriendshipService):
     def __init__(self,

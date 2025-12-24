@@ -1,7 +1,7 @@
 from src.domain.repositories import IFriendshipRepo, IUserRepo, IFqRepo
 from src.domain.message_senders import IFqMessageSender
 from src.domain.dto.responces.fq import SendFqStatus
-from .. import IFqService, IFqLimitsService
+from src.domain.services import IFqService, IFqLimitsService
 
 
 class FqService(IFqService):
