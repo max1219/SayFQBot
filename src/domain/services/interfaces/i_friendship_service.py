@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Sequence
 
-from src.domain.dto.responces.friendship import AcceptFriendshipStatus, RequestFriendshipStatus
+from src.domain.dto.responses.friendship import AcceptFriendshipStatus, RequestFriendshipStatus
 
 class IFriendshipService(ABC):
     @abstractmethod

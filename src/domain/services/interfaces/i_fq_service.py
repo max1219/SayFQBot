@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.domain.dto.responces.fq import SendFqStatus
+from src.domain.dto.responses.fq import SendFqStatus
 
 
 class IFqService(ABC):

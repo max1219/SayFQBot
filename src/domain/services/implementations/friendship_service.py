@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from src.domain.repositories import IFriendshipRepo, IFriendshipRequestRepo, IUserRepo
-from src.domain.dto.responces.friendship import RequestFriendshipStatus, AcceptFriendshipStatus
+from src.domain.dto.responses.friendship import RequestFriendshipStatus, AcceptFriendshipStatus
 from src.domain.message_senders import IFriendshipMessageSender
 
 from src.domain.services import IFriendshipService
