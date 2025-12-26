@@ -17,11 +17,11 @@ class SqliteFriendshipRepo(IFriendshipRepo):
 
     async def initialize(self):
         await self._connection.execute("""CREATE TABLE IF NOT EXISTS friendship(
-        user1_id INTEGER,
-        user2_id INTEGER,
-        PRIMARY KEY (user1_id, user2_id),
-        FOREIGN KEY (user1_id) REFERENCES user (user_id) ON DELETE CASCADE,
-        FOREIGN KEY (user2_id) REFERENCES user (user_id) ON DELETE CASCADE)""")
+            user1_id INTEGER,
+            user2_id INTEGER,
+            PRIMARY KEY (user1_id, user2_id),
+            FOREIGN KEY (user1_id) REFERENCES user(user_id) ON DELETE CASCADE,
+            FOREIGN KEY (user2_id) REFERENCES user(user_id) ON DELETE CASCADE)""")
         await self._connection.commit()
 
     async def check_friendship(self, user1_id: int, user2_id: int) -> bool:

@@ -2,7 +2,7 @@ import asyncio
 
 import aiosqlite
 
-from typing import Optional
+from typing import Optional, Sequence
 
 from src.domain.entities import User
 from src.domain.repositories import IUserRepo
@@ -49,3 +49,15 @@ class SqliteUserRepo(IUserRepo):
             await cur.execute("INSERT OR IGNORE INTO user(user_id, name) VALUES(?, ?)",
                                     (user.user_id, user.name))
             await self._connection.commit()
+
+    async def get_all_users(self) -> Sequence[User]:
+        async with self._connection.cursor() as cur:
+            await cur.execute("SELECT * FROM user")
+            rows = await cur.fetchall()
+            return [User(row[0], row[1]) for row in rows]
+
+    async def remove_user(self, user_id: int) -> None:
+        async with self._connection.cursor() as cur:
+            await cur.execute("DELETE FROM user WHERE user_id = ?", (user_id,))
+            await self._connection.commit()
+

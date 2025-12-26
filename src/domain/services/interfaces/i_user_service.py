@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Sequence
 
 from src.domain.dto.responses.user import GetUserResponse
 from src.domain.dto.requests.user import AddUserRequest
@@ -20,4 +20,12 @@ class IUserService(ABC):
 
     @abstractmethod
     async def add_user(self, request: AddUserRequest) -> None:
+        pass
+
+    @abstractmethod
+    async def get_all_users(self) -> Sequence[GetUserResponse]:
+        pass
+
+    @abstractmethod
+    async def remove_user(self, user_id: int) -> None:
         pass

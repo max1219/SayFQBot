@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Optional
+from typing import Optional, Sequence
 
 from src.domain.entities import User
 from src.domain.repositories.i_repo import IRepo
@@ -20,4 +20,12 @@ class IUserRepo(IRepo):
 
     @abstractmethod
     async def add_user(self, user: User) -> None:
+        pass
+
+    @abstractmethod
+    async def get_all_users(self) -> Sequence[User]:
+        pass
+
+    @abstractmethod
+    async def remove_user(self, user_id: int) -> None:
         pass

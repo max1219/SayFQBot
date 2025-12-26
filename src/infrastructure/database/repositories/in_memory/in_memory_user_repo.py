@@ -1,6 +1,6 @@
 import asyncio
 
-from typing import Optional, List
+from typing import Optional, List, Sequence
 
 from src.domain.repositories import IUserRepo
 from src.domain.entities import User
@@ -27,11 +27,16 @@ class InMemoryUserRepo(IUserRepo):
         else:
             return result
 
-    async def get_by_id(self, user_id: int) -> Optional[str]:
+    async def get_by_id(self, user_id: int) -> Optional[User]:
         result = next(filter(lambda user: user.user_id == user_id, self._users), None)
         if result is None:
             return None
         else:
             return result
 
+    async def get_all_users(self) -> Sequence[User]:
+        return list(self._users)
+
+    async def remove_user(self, user_id: int) -> None:
+        self._users.remove(await self.get_by_id(user_id))
 

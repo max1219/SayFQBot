@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Sequence
 
 from src.domain.dto.requests.user import AddUserRequest
 from src.domain.dto.responses.user import GetUserResponse
@@ -31,3 +31,13 @@ class UserService(IUserService):
                 # Мб потом че поставить сюда
                 pass
             await self._user_repo.add_user(User(user_id=request.user_id, name=request.name))
+
+    async def get_all_users(self) -> Sequence[GetUserResponse]:
+        users: Sequence[User] = await self._user_repo.get_all_users()
+        return [GetUserResponse(user_id=user.user_id, name=user.name) for user in users]
+
+    async def remove_user(self, user_id: int) -> None:
+        await self._user_repo.remove_user(user_id)
+
+
+
