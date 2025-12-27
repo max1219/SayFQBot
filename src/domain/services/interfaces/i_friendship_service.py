@@ -19,3 +19,7 @@ class IFriendshipService(ABC):
     @abstractmethod
     async def remove_friendship(self, user1_id: int, user2_id: int) -> bool:
         pass
+
+    @abstractmethod
+    async def get_incoming_requests(self, user_to_id: int) -> Sequence[int]:
+        pass

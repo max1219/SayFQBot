@@ -26,3 +26,7 @@ class IFqLimitsService(ABC):
     @abstractmethod
     async def get_to_this_friend_limit_spent(self, id_from: int, id_to: int) -> int:
         pass
+
+    @abstractmethod
+    async def clear_spent_limits(self) -> None:
+        pass

@@ -1,4 +1,5 @@
 import asyncio
+from typing import Sequence
 
 import aiosqlite
 
@@ -55,3 +56,11 @@ class SqliteFriendshipRequestRepo(IFriendshipRequestRepo):
                 (user2_id, user1_id))
             row = await cur.fetchone()
             return row is not None
+
+    async def get_incoming_requests(self, user_to_id: int) -> Sequence[int]:
+        async with self._connection.cursor() as cur:
+            await cur.execute("SELECT user_from_id FROM friendship_request WHERE user_to_id = ?", (user_to_id,))
+            rows = await cur.fetchall()
+            return [row[0] for row in rows]
+
+

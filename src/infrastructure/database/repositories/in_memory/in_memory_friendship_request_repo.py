@@ -1,6 +1,6 @@
 import asyncio
 
-from typing import List, Tuple
+from typing import List, Tuple, Sequence
 
 from src.domain.repositories import IFriendshipRequestRepo
 
@@ -23,3 +23,8 @@ class InMemoryFriendshipRequestRepo(IFriendshipRequestRepo):
 
     async def is_exists(self, user1_id: int, user2_id: int, ignore_order: bool) -> bool:
         return (user1_id, user2_id) in self._pairs or ignore_order and (user2_id, user1_id) in self._pairs
+
+    async def get_incoming_requests(self, user_to_id: int) -> Sequence[int]:
+        return [pair[0] for pair in self._pairs if pair[1] == user_to_id]
+
+

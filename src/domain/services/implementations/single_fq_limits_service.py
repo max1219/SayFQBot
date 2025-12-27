@@ -37,3 +37,7 @@ class SingleFqLimitsService(IFqLimitsService):
 
     async def get_to_this_friend_limit_spent(self, id_from: int, id_to: int) -> int:
         return await self._fq_repo.get_to_this_friend_sent_count(id_from, id_to)
+
+    async def clear_spent_limits(self) -> None:
+        await self._fq_repo.clear()
+

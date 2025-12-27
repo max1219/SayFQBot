@@ -19,7 +19,7 @@ class IUserService(ABC):
         pass
 
     @abstractmethod
-    async def add_user(self, request: AddUserRequest) -> None:
+    async def add_user(self, request: AddUserRequest) -> bool:
         pass
 
     @abstractmethod

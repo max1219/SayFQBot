@@ -64,3 +64,7 @@ class FriendshipService(IFriendshipService):
 
             await self._friendship_repo.remove_friendship(user1_id, user2_id)
             return True
+
+    async def get_incoming_requests(self, user_to_id: int) -> Sequence[int]:
+        return await self._friendship_request_repo.get_incoming_requests(user_to_id)
+

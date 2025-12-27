@@ -25,12 +25,12 @@ class UserService(IUserService):
             return None
         return GetUserResponse(user_id=user.user_id, name=user.name)
 
-    async def add_user(self, request: AddUserRequest) -> None:
+    async def add_user(self, request: AddUserRequest) -> bool:
         async with self._user_repo.get_lock():
             if await self._user_repo.is_exists(request.user_id):
-                # Мб потом че поставить сюда
-                pass
+                return False
             await self._user_repo.add_user(User(user_id=request.user_id, name=request.name))
+            return True
 
     async def get_all_users(self) -> Sequence[GetUserResponse]:
         users: Sequence[User] = await self._user_repo.get_all_users()
