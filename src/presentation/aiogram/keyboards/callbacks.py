@@ -6,8 +6,11 @@ class BaseCbWithReturnMenu(CallbackData, prefix='OVERRIDE ME'):
 class FriendSelectCallback(BaseCbWithReturnMenu, prefix='friend_select'):
     user_id: int
 
-class FriendFqCallback(CallbackData, prefix='friend_fq'):
+class FriendFqCallback(BaseCbWithReturnMenu, prefix='friend_fq'):
     user_id: int
 
 class PageSelectCallback(CallbackData, prefix='page_select'):
     page: int
+
+class FriendshipAcceptCallback(CallbackData, prefix='friend_accept'):
+    user_id: int

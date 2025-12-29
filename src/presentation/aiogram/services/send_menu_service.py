@@ -5,7 +5,7 @@ from aiogram.types import InlineKeyboardMarkup, CallbackQuery
 
 from src.domain.services import IUserService, IFriendshipService, IFqLimitsService
 
-from src.presentation.aiogram.keyboards import create_main_kb
+from src.presentation.aiogram.keyboards.inline import create_main_kb
 from src.presentation.aiogram.keyboards.types import FriendEntry, PaginationData
 
 

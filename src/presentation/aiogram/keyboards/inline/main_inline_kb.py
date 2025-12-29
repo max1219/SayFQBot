@@ -19,7 +19,7 @@ def create_main_kb(
             InlineKeyboardButton(text=friend.name,
                                  callback_data=FriendSelectCallback(user_id=friend.user_id, page=page).pack()),
             InlineKeyboardButton(text=('Уже послан' if friend.is_already_sent else 'Послать'),
-                                 callback_data=FriendFqCallback(user_id=friend.user_id).pack())
+                                 callback_data=FriendFqCallback(user_id=friend.user_id, page=page).pack())
         )
 
     if pagination_data:

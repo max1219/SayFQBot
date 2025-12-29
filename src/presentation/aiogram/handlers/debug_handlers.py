@@ -160,7 +160,7 @@ async def cmd_send_me_fq(message: Message, args: Sequence[str],
 
 @router.message(CommandWithArgsFilter('clearSpentLimits'))
 async def cmd_clear_spent_limits(message: Message, args: Sequence[str],
-                         fq_limits_service: IFqLimitsService):
+                                 fq_limits_service: IFqLimitsService):
     args: Optional[Sequence] = await CommandWithArgsFilter.check_and_process_args(
         message, args, [], [])
     if args is None:
