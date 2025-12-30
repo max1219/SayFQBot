@@ -11,7 +11,7 @@ class CommandWithArgsFilter(BaseFilter):
         self._prefix = f'/{command}'
 
     async def __call__(self, message: Message) -> bool | dict[str, Any]:
-        if not message.text.startswith(self._prefix):
+        if message.text is None or not message.text.startswith(self._prefix):
             return False
 
         parts = message.text.split()

@@ -94,7 +94,7 @@ async def cmd_request_friendship(message: Message, args: Sequence[str],
         message, args, [int, str], ['id_from', 'name_to'])
     if args is None:
         return
-    status = await friendship_service.request_friendship(args[0], args[1])
+    status = await friendship_service.request_friendship_by_name(args[0], args[1])
     await message.answer(str(status))
 
 

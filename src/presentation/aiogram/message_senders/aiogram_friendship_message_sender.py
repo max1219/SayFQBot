@@ -17,7 +17,7 @@ class AiogramFriendshipMessageSender(IFriendshipMessageSender):
         try:
             await self._bot.send_message(
                 chat_id=id_to,
-                text=f'Вам приглашение в друзья от {name_from}',
+                text=f'Вам приглашение в друзья от @{name_from}',
                 reply_markup=create_friendship_accept_kb(id_from))
             return True
         except AiogramError:

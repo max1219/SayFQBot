@@ -5,7 +5,11 @@ from src.domain.dto.responses.friendship import AcceptFriendshipStatus, RequestF
 
 class IFriendshipService(ABC):
     @abstractmethod
-    async def request_friendship(self, id_from: int, name_to: str) -> RequestFriendshipStatus:
+    async def request_friendship_by_name(self, id_from: int, name_to: str) -> RequestFriendshipStatus:
+        pass
+
+    @abstractmethod
+    async def request_friendship_by_id(self, id_from: int, id_to: int) -> RequestFriendshipStatus:
         pass
 
     @abstractmethod

@@ -38,6 +38,4 @@ def create_main_kb(
             *buttons
         )
 
-    builder.row(InlineKeyboardButton(text='Добавить друга', callback_data='friend_search'))
-
     return builder.as_markup()
