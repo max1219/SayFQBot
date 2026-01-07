@@ -1,11 +1,10 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import Optional, Sequence
 
 from src.domain.entities import User
-from src.domain.repositories.i_repo import IRepo
 
 
-class IUserRepo(IRepo):
+class IUserRepo(ABC):
     @abstractmethod
     async def is_exists(self, user_id: int) -> bool:
         pass
@@ -19,7 +18,7 @@ class IUserRepo(IRepo):
         pass
 
     @abstractmethod
-    async def add_user(self, user: User) -> None:
+    async def try_add_user(self, user: User) -> bool:
         pass
 
     @abstractmethod

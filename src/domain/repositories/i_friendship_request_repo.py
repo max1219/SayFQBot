@@ -1,16 +1,14 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import Sequence
 
-from src.domain.repositories.i_repo import IRepo
 
-
-class IFriendshipRequestRepo(IRepo):
+class IFriendshipRequestRepo(ABC):
     @abstractmethod
-    async def add_request(self, user1_id: int, user2_id: int) -> None:
+    async def try_add_request(self, user1_id: int, user2_id: int) -> bool:
         pass
 
     @abstractmethod
-    async def remove_request(self, user1_id: int, user2_id: int, ignore_order: bool) -> None:
+    async def try_remove_request(self, user1_id: int, user2_id: int, ignore_order: bool) -> bool:
         pass
 
     @abstractmethod

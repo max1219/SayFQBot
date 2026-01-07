@@ -1,10 +1,9 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import Sequence
 
-from src.domain.repositories.i_repo import IRepo
 
 
-class IFriendshipRepo(IRepo):
+class IFriendshipRepo(ABC):
     @abstractmethod
     async def check_friendship(self, user1_id: int, user2_id: int) -> bool:
         pass
@@ -18,5 +17,5 @@ class IFriendshipRepo(IRepo):
         pass
 
     @abstractmethod
-    async def remove_friendship(self, user1_id: int, user2_id: int) -> None:
+    async def try_remove_friendship(self, user1_id: int, user2_id: int) -> bool:
         pass

@@ -1,5 +1,5 @@
 from src.domain.services.implementations.friendship_service import FriendshipService
-from src.infrastructure.database.repositories.sqlite import *
+from src.infrastructure.database.sqlite import *
 from src.domain.services.implementations.fq_service import FqService
 from src.domain.services.implementations.single_fq_limits_service import SingleFqLimitsService
 from src.domain.services.implementations.constant_fq_limit_provider import ConstantFqLimitProvider
@@ -15,8 +15,7 @@ async def start_demo():
     friendship_request_repo: SqliteFriendshipRequestRepo
 
     fq_repo, user_repo, friendship_repo, friendship_request_repo = (
-        await ensure_created_and_get_repos("infrastructure/database/db.sqlite"))
-
+        await ensure_created_and_get_repos("../db.sqlite"))
     friendship_message_sender = ConsoleFriendshipMessageSender()
     fq_message_sender = ConsoleFqMessageSender()
     friendship_service = FriendshipService(friendship_repo, friendship_request_repo, user_repo,
@@ -25,10 +24,10 @@ async def start_demo():
     fq_limits_provider = ConstantFqLimitProvider(2)
     fq_limits_service = SingleFqLimitsService(fq_limits_provider, fq_repo)
     fq_service = FqService(fq_message_sender, friendship_repo, user_repo, fq_limits_service, fq_repo)
-    await user_repo.add_user(User(0, "Zero"))
-    await user_repo.add_user(User(1, "One"))
-    await user_repo.add_user(User(2, "Two"))
-    await user_repo.add_user(User(3, "Three"))
+    await user_repo.try_add_user(User(0, "Zero"))
+    await user_repo.try_add_user(User(1, "One"))
+    await user_repo.try_add_user(User(2, "Two"))
+    await user_repo.try_add_user(User(3, "Three"))
 
     print("Zero friends:", await friendship_service.get_all_friends(0))
     print("Wrong accept friendship:", await friendship_service.accept_friendship(0, 1))

@@ -1,3 +1,5 @@
+import asyncio
+
 from typing import Sequence
 
 from src.domain.repositories import IFriendshipRepo, IFriendshipRequestRepo, IUserRepo
@@ -17,19 +19,20 @@ class FriendshipService(IFriendshipService):
         self._friendship_request_repo = friendship_request_repo
         self._user_repo = user_repo
         self._message_sender = message_sender
+        self._lock = asyncio.Lock()
 
     async def get_all_friends(self, user_id: int) -> Sequence[int]:
         return await self._friendship_repo.get_all_friends(user_id)
 
     async def accept_friendship(self, id_accepted: int, id_requested: int) -> AcceptFriendshipStatus:
-        async with self._friendship_request_repo.get_lock():
-            if await self._friendship_request_repo.is_exists(id_requested, id_accepted, False):
-                await self._friendship_request_repo.remove_request(id_requested, id_accepted, False)
-                await self._friendship_repo.add_friendship(id_requested, id_accepted)
-                name_accepted = (await self._user_repo.get_by_id(id_accepted)).name
-                await self._message_sender.send_friendship_accepted(id_accepted, id_requested, name_accepted)
-                return AcceptFriendshipStatus.Success
+        is_exists: bool = await self._friendship_request_repo.try_remove_request(id_requested, id_accepted, False)
+        if not is_exists:
             return AcceptFriendshipStatus.NotFound
+
+        await self._friendship_repo.add_friendship(id_requested, id_accepted)
+        name_accepted = (await self._user_repo.get_by_id(id_accepted)).name
+        await self._message_sender.send_friendship_accepted(id_accepted, id_requested, name_accepted)
+        return AcceptFriendshipStatus.Success
 
     async def request_friendship_by_name(self, id_from: int, name_to: str) -> RequestFriendshipStatus:
         user_to = await self._user_repo.get_by_name(name_to)
@@ -40,35 +43,31 @@ class FriendshipService(IFriendshipService):
         return await self.request_friendship_by_id(id_from, id_to)
 
     async def request_friendship_by_id(self, id_from: int, id_to: int) -> RequestFriendshipStatus:
-        if not await self._user_repo.is_exists(id_to):
-            return RequestFriendshipStatus.UserNotFound
 
-        if await self._friendship_request_repo.is_exists(id_to, id_from, False):
-            await self.accept_friendship(id_from, id_to)
-            return RequestFriendshipStatus.AutoAccepted
+        async with self._lock:
+            if not await self._user_repo.is_exists(id_to):
+                return RequestFriendshipStatus.UserNotFound
 
-        async with self._friendship_request_repo.get_lock():
-            if await self._friendship_request_repo.is_exists(id_from, id_to, False):
-                return RequestFriendshipStatus.AlreadyRequested
+            is_auto_accepted = (await self.accept_friendship(id_from, id_to)) == AcceptFriendshipStatus.Success
+            if is_auto_accepted:
+                return RequestFriendshipStatus.AutoAccepted
 
             if await self._friendship_repo.check_friendship(id_from, id_to):
                 return RequestFriendshipStatus.AlreadyFriend
 
-            name_from = (await self._user_repo.get_by_id(id_from)).name
-            is_sent = await self._message_sender.send_friendship_request(id_from, id_to, name_from)
-            if is_sent:
-                await self._friendship_request_repo.add_request(id_from, id_to)
-                return RequestFriendshipStatus.Success
+            is_exists = not await self._friendship_request_repo.try_add_request(id_from, id_to)
+            if is_exists:
+                return RequestFriendshipStatus.AlreadyRequested
 
-            return RequestFriendshipStatus.CannotSendMessage
+            name_from = (await self._user_repo.get_by_id(id_from)).name
+        is_sent = await self._message_sender.send_friendship_request(id_from, id_to, name_from)
+        if is_sent:
+            return RequestFriendshipStatus.Success
+        await self._friendship_request_repo.try_remove_request(id_from, id_to, False)
+        return RequestFriendshipStatus.CannotSendMessage
 
     async def remove_friendship(self, user1_id: int, user2_id: int) -> bool:
-        async with self._friendship_repo.get_lock():
-            if not self._friendship_repo.check_friendship(user1_id, user2_id):
-                return False
-
-            await self._friendship_repo.remove_friendship(user1_id, user2_id)
-            return True
+        return await self._friendship_repo.try_remove_friendship(user1_id, user2_id)
 
     async def get_incoming_requests(self, user_to_id: int) -> Sequence[int]:
         return await self._friendship_request_repo.get_incoming_requests(user_to_id)

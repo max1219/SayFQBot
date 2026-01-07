@@ -1,11 +1,15 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
-from src.domain.repositories.i_repo import IRepo
+from .operation_results import AddFqStatus
 
 
-class IFqRepo(IRepo):
+class IFqRepo(ABC):
     @abstractmethod
-    async def add_fq(self, id_from: int, id_to: int) -> None:
+    async def try_add_fq(self, id_from: int, id_to: int, limit_total: int, limit_to:int) -> AddFqStatus:
+        pass
+
+    @abstractmethod
+    async def remove_fq(self, id_from: int, id_to: int) -> None:
         pass
 
     @abstractmethod

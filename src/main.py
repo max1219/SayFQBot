@@ -15,7 +15,7 @@ from src.presentation.aiogram.services import SendMenuService, IsAdminService
 
 from src.domain.services.implementations import FqService, FriendshipService, SingleFqLimitsService, UserService, \
     ConstantFqLimitProvider
-from src.infrastructure.database.repositories.sqlite import *
+from src.infrastructure.database.sqlite import *
 
 from src.config import Config, load_config
 

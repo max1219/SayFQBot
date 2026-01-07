@@ -2,6 +2,7 @@ from src.domain.repositories import IFriendshipRepo, IUserRepo, IFqRepo
 from src.domain.message_senders import IFqMessageSender
 from src.domain.dto.responses.fq import SendFqStatus
 from src.domain.services import IFqService, IFqLimitsService
+from src.domain.repositories.operation_results import AddFqStatus
 
 
 class FqService(IFqService):
@@ -24,19 +25,20 @@ class FqService(IFqService):
         if not await self._friendship_repo.check_friendship(id_from, id_to):
             return SendFqStatus.NotFriend
 
-        async with self._fq_repo.get_lock():
-            limits_availability: IFqLimitsService.LimitsExceeds = await self._limits_service.is_available(id_from, id_to)
+        limit_total = await self._limits_service.get_total_limit(id_from)
+        limit_to = await self._limits_service.get_to_this_friend_limit(id_from, id_to)
+        add_fq_status: AddFqStatus = await self._fq_repo.try_add_fq(id_from, id_to, limit_total, limit_to)
 
-            if IFqLimitsService.LimitsExceeds.TotalLimitExceeded in limits_availability:
-                return SendFqStatus.TotalLimitExceeded
+        if AddFqStatus.TotalLimitExceeded in add_fq_status:
+            return SendFqStatus.TotalLimitExceeded
+        if AddFqStatus.ToThisFriendLimitExceeded in add_fq_status:
+            return SendFqStatus.ToThisFriendLimitExceeded
 
-            if IFqLimitsService.LimitsExceeds.ToThisFriendLimitExceeded in limits_availability:
-                return SendFqStatus.ToThisFriendLimitExceeded
 
-            name_from = (await self._user_repo.get_by_id(id_from)).name
+        name_from = (await self._user_repo.get_by_id(id_from)).name
 
-            if await self._message_sender.send_fq(id_from, id_to, name_from):
-                await self._fq_repo.add_fq(id_from, id_to)
-                return SendFqStatus.Success
-            else:
-                return SendFqStatus.CannotSendMessage
+        if await self._message_sender.send_fq(id_from, id_to, name_from):
+            return SendFqStatus.Success
+        else:
+            await self._fq_repo.remove_fq(id_from, id_to)
+            return SendFqStatus.CannotSendMessage
