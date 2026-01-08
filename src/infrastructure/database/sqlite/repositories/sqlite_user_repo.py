@@ -18,9 +18,7 @@ class SqliteUserRepo(IUserRepo):
         raise NotImplementedError()
 
     async def initialize(self):
-        #async with self._pool.transaction() as cur:
-            conn = await aiosqlite.connect(self._pool._path)
-            cur = await conn.cursor()
+        async with self._pool.transaction() as cur:
             await cur.execute("""CREATE TABLE IF NOT EXISTS user(
             user_id INTEGER PRIMARY KEY,
             name TEXT NOT NULL UNIQUE)""")

@@ -60,3 +60,4 @@ class SqliteFriendshipRepo(IFriendshipRepo):
                 return False
             await cur.execute(
                 "DELETE FROM friendship WHERE user1_id = ? AND user2_id = ?", (user1_id, user2_id))
+            return True
