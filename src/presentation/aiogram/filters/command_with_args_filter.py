@@ -1,6 +1,6 @@
 
 
-from typing import Any, Sequence, Optional, Type, TypeGuard
+from typing import Any, Sequence, Optional, Type
 
 from aiogram.filters import BaseFilter
 from aiogram.types import Message

@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.types import CallbackQuery
 
 from src.domain.services import IFqService
@@ -13,10 +13,8 @@ router = Router()
 async def cb_friend_fq(callback: CallbackQuery, callback_data: FriendFqCallback,
                  fq_service: IFqService, send_menu_service: SendMenuService):
     status: SendFqStatus = await fq_service.send_fq(callback.from_user.id, callback_data.user_id)
-
+    await send_menu_service.send_menu(callback.from_user.id, callback_data.page, callback)
     match status:
-        case SendFqStatus.Success:
-            await send_menu_service.send_menu(callback.from_user.id, callback_data.page, callback)
         case SendFqStatus.CannotSendMessage:
             await callback.answer('Не удалось отправить сообщение. Возможно, эта х*ила добавила бота в чс',
                                   show_alert=True)
@@ -31,3 +29,4 @@ async def cb_friend_fq(callback: CallbackQuery, callback_data: FriendFqCallback,
             await send_menu_service.send_menu(callback.from_user.id, callback_data.page, callback)
         case SendFqStatus.TotalLimitExceeded:
             await callback.answer('На сегодня лимит исчерпан. Все, на кого вас не хватило, эту ночь спят спокойно')
+

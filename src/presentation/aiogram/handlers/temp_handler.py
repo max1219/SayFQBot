@@ -1,7 +1,6 @@
-import logging
 
 
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.types import Message, CallbackQuery
 
 from src.presentation.aiogram.services import SendMenuService

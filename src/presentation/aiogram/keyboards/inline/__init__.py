@@ -1,3 +1,5 @@
-from .friendship_inline_kb import create_friendship_accept_kb
+from .friendship_accept_inline_kb import create_friendship_accept_kb
 from .main_inline_kb import create_main_kb
 from .okay_inline_kb import create_okay_kb
+from .selected_friend_inline_kb import create_selected_friend_kb
+from .friend_delete_confirmation_kb import create_friend_delete_confirmation_kb

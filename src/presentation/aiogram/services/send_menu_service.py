@@ -7,6 +7,7 @@ from src.domain.services import IUserService, IFriendshipService, IFqLimitsServi
 
 from src.presentation.aiogram.keyboards.inline import create_main_kb
 from src.presentation.aiogram.keyboards.types import FriendEntry, PaginationData
+from src.presentation.aiogram.services.keyboard_comparer import compare_inline_keyboards
 
 
 class SendMenuService:
@@ -22,8 +23,7 @@ class SendMenuService:
         self._n_friends_on_page = n_friends_on_page
         self._bot = bot
 
-
-    async def send_menu(self, user_id: int, page: int, callback: Optional[CallbackQuery] = None) -> None:
+    async def send_menu(self, user_id: int, page: Optional[int] = 0, callback: Optional[CallbackQuery] = None) -> None:
         """
         :param user_id:
         :param page:
@@ -46,14 +46,20 @@ class SendMenuService:
         friend_entries = map(lambda triple: FriendEntry(user_id=triple[0], name=triple[1], is_already_sent=triple[2]),
                              zip(friend_ids, friend_names, friend_sent_flags))
 
-
         keyboard: InlineKeyboardMarkup = create_main_kb(friend_entries, pagination_data)
 
-        text = "Пашла нахуй шваль"
+        count_total = await self._fq_limits_service.get_total_limit(user_id)
+        count_spent = await self._fq_limits_service.get_total_limit_spent(user_id)
+
+        text = f'Добро пожаловать и пошел нахуй!\n\nМожешь послать сегодня еще {count_total - count_spent}/{count_total} друзей'
+        if len(friend_ids) == 0:
+            text += '\n\nУ тебя нет друзей. Можешь отправить кому нибудь заявку (клавиатура снизу, мб она скрыта)'
         if callback:
             if callback.message.text != text:
                 await callback.message.edit_text(text=text, reply_markup=keyboard)
-            elif callback.message.reply_markup != keyboard:
+            elif not compare_inline_keyboards(callback.message.reply_markup, keyboard):
+                print(callback.message.reply_markup)
+                print(keyboard)
                 await callback.message.edit_reply_markup(reply_markup=keyboard)
         else:
             await self._bot.send_message(chat_id=user_id, text=text, reply_markup=keyboard)

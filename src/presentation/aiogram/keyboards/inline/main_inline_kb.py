@@ -17,7 +17,7 @@ def create_main_kb(
     for friend in friends:
         builder.row(
             InlineKeyboardButton(text=friend.name,
-                                 callback_data=FriendSelectCallback(user_id=friend.user_id, page=page).pack()),
+                                 callback_data=FriendSelectCallback(user_id=friend.user_id).pack()),
             InlineKeyboardButton(text=('Уже послан' if friend.is_already_sent else 'Послать'),
                                  callback_data=FriendFqCallback(user_id=friend.user_id, page=page).pack())
         )

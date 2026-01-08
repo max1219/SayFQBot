@@ -5,8 +5,8 @@ import asyncio
 from aiogram import Bot, Dispatcher
 
 from src.presentation.aiogram.middlewares.ensure_registered_middleware import EnsureRegisteredMiddleware
-from src.presentation.aiogram.handlers import temp_handler, debug_handlers, okay_handler, send_fq_handlers, \
-    friendship_accept_handlers, add_friend_handlers
+from src.presentation.aiogram.handlers import temp_handler, debug_handlers, close_handler, send_fq_handlers, \
+    friendship_accept_handlers, add_friend_handlers, selected_friend_handlers
 
 from src.presentation.aiogram.message_senders import *
 from src.presentation.console_demo.message_senders import *
@@ -73,10 +73,11 @@ async def main() -> None:
 
     if config.bot.debug_features:
         dp.include_router(debug_handlers.router)
-    dp.include_router(okay_handler.router)
+    dp.include_router(close_handler.router)
     dp.include_router(send_fq_handlers.router)
     dp.include_router(friendship_accept_handlers.router)
     dp.include_router(add_friend_handlers.router)
+    dp.include_router(selected_friend_handlers.router)
     dp.include_router(temp_handler.router)
 
     await dp.start_polling(bot)
