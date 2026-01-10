@@ -22,6 +22,7 @@ class Config:
     bot: BotConfig
     database: DatabaseConfig
     logging: LoggingConfig
+    time_per_clear_fq: int
 
 
 def load_config(path: Optional[str]) -> Config:
@@ -34,4 +35,5 @@ def load_config(path: Optional[str]) -> Config:
             debug_features=env.bool('AIOGRAM_DEBUG_FEATURES')),
         database=DatabaseConfig(path=env("DATABASE_PATH")),
         logging=LoggingConfig(level=env("LOG_LEVEL")),
+        time_per_clear_fq=env.int('TIME_PER_CLEAR_FQ'),
     )

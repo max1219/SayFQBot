@@ -74,7 +74,15 @@ async def main() -> None:
     dp = Dispatcher()
 
     await create_and_add_services(bot, dp, config)
-    await dp['fq_limits_service'].clear_spent_limits()
+
+
+    async def clear_spent_limits():
+        while True:
+            print('clear limits')
+            asyncio.create_task(dp['fq_limits_service'].clear_spent_limits())
+            await asyncio.sleep(config.time_per_clear_fq)
+
+    asyncio.create_task(clear_spent_limits())
 
     dp.update.outer_middleware(EnsureRegisteredMiddleware())
 
@@ -86,6 +94,8 @@ async def main() -> None:
     dp.include_router(add_friend_handlers.router)
     dp.include_router(selected_friend_handlers.router)
     dp.include_router(message_handler.router)
+
+
 
     await dp.start_polling(bot)
 
