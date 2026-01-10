@@ -2,8 +2,6 @@ import asyncio
 
 from typing import Optional, Sequence
 
-import aiosqlite
-
 from src.domain.entities import User
 from src.domain.repositories import IUserRepo
 from src.infrastructure.database.sqlite.connection_pool import ConnectionPool

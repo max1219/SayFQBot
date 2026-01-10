@@ -1,0 +1,1 @@
+from .lexicon_base import LexiconBase

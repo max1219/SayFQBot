@@ -5,16 +5,18 @@ import asyncio
 from aiogram import Bot, Dispatcher
 
 from src.presentation.aiogram.middlewares.ensure_registered_middleware import EnsureRegisteredMiddleware
-from src.presentation.aiogram.handlers import temp_handler, debug_handlers, close_handler, send_fq_handlers, \
-    friendship_accept_handlers, add_friend_handlers, selected_friend_handlers
+from src.presentation.aiogram.handlers import debug_handlers, close_handler, send_fq_handlers, \
+    friendship_accept_handlers, add_friend_handlers, selected_friend_handlers, message_handler
 
 from src.presentation.aiogram.message_senders import *
 from src.presentation.console_demo.message_senders import *
 from src.debug_helpers.proxy_message_senders import *
 from src.presentation.aiogram.services import SendMenuService, IsAdminService
+from src.infrastructure.lexicon import create_lexicon
 
 from src.domain.services.implementations import FqService, FriendshipService, SingleFqLimitsService, UserService, \
     ConstantFqLimitProvider
+from src.domain.services.presentation import LexiconBase
 from src.infrastructure.database.sqlite import *
 
 from src.config import Config, load_config
@@ -29,9 +31,11 @@ async def create_and_add_services(bot: Bot, dp: Dispatcher, config: Config):
     fq_repo, user_repo, friendship_repo, friendship_request_repo = (
         await ensure_created_and_get_repos(config.database.path))
 
-    friendship_message_sender = AiogramFriendshipMessageSender(bot)
+    lexicon: LexiconBase = create_lexicon()
+
+    friendship_message_sender = AiogramFriendshipMessageSender(bot, lexicon)
     fake_friendship_message_sender = ConsoleFriendshipMessageSender()
-    fq_message_sender = AiogramFqMessageSender(bot)
+    fq_message_sender = AiogramFqMessageSender(bot, lexicon)
     fake_fq_message_sender = ConsoleFqMessageSender()
 
     if config.bot.debug_features:
@@ -48,7 +52,8 @@ async def create_and_add_services(bot: Bot, dp: Dispatcher, config: Config):
                                            friendship_message_sender)
     user_service = UserService(user_repo)
 
-    send_menu_service = SendMenuService(user_service, friendship_service, fq_limits_service, 5, bot)
+    send_menu_service = SendMenuService(
+        user_service, friendship_service, fq_limits_service, 5, bot, lexicon)
     is_admin_service = IsAdminService(config.bot.admin_ids)
 
     dp['user_service'] = user_service
@@ -57,6 +62,7 @@ async def create_and_add_services(bot: Bot, dp: Dispatcher, config: Config):
     dp['fq_limits_service'] = fq_limits_service
     dp['send_menu_service'] = send_menu_service
     dp['is_admin_service'] = is_admin_service
+    dp['lexicon'] = lexicon
 
 
 async def main() -> None:
@@ -68,6 +74,7 @@ async def main() -> None:
     dp = Dispatcher()
 
     await create_and_add_services(bot, dp, config)
+    await dp['fq_limits_service'].clear_spent_limits()
 
     dp.update.outer_middleware(EnsureRegisteredMiddleware())
 
@@ -78,7 +85,7 @@ async def main() -> None:
     dp.include_router(friendship_accept_handlers.router)
     dp.include_router(add_friend_handlers.router)
     dp.include_router(selected_friend_handlers.router)
-    dp.include_router(temp_handler.router)
+    dp.include_router(message_handler.router)
 
     await dp.start_polling(bot)
 

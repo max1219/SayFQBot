@@ -4,6 +4,7 @@ from aiogram import Bot
 from aiogram.types import InlineKeyboardMarkup, CallbackQuery
 
 from src.domain.services import IUserService, IFriendshipService, IFqLimitsService
+from src.domain.services.presentation import LexiconBase
 
 from src.presentation.aiogram.keyboards.inline import create_main_kb
 from src.presentation.aiogram.keyboards.types import FriendEntry, PaginationData
@@ -16,12 +17,14 @@ class SendMenuService:
                  friendship_service: IFriendshipService,
                  fq_limits_service: IFqLimitsService,
                  n_friends_on_page,
-                 bot: Bot):
+                 bot: Bot,
+                 lexicon: LexiconBase):
         self._user_service = user_service
         self._friendship_service = friendship_service
         self._fq_limits_service = fq_limits_service
         self._n_friends_on_page = n_friends_on_page
         self._bot = bot
+        self._lexicon = lexicon
 
     async def send_menu(self, user_id: int, page: Optional[int] = 0, callback: Optional[CallbackQuery] = None) -> None:
         """
@@ -46,14 +49,14 @@ class SendMenuService:
         friend_entries = map(lambda triple: FriendEntry(user_id=triple[0], name=triple[1], is_already_sent=triple[2]),
                              zip(friend_ids, friend_names, friend_sent_flags))
 
-        keyboard: InlineKeyboardMarkup = create_main_kb(friend_entries, pagination_data)
+        keyboard: InlineKeyboardMarkup = create_main_kb(friend_entries, pagination_data, self._lexicon)
 
         count_total = await self._fq_limits_service.get_total_limit(user_id)
         count_spent = await self._fq_limits_service.get_total_limit_spent(user_id)
 
-        text = f'Добро пожаловать и пошел нахуй!\n\nМожешь послать сегодня еще {count_total - count_spent}/{count_total} друзей'
+        text = self._lexicon.get('menu_title').format(count_left=count_total-count_spent, count_total=count_total)
         if len(friend_ids) == 0:
-            text += '\n\nУ тебя нет друзей. Можешь отправить кому нибудь заявку (клавиатура снизу, мб она скрыта)'
+            text += self._lexicon.get('menu_no_friends')
         if callback:
             if callback.message.text != text:
                 await callback.message.edit_text(text=text, reply_markup=keyboard)

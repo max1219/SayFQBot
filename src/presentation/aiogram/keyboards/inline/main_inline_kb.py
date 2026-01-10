@@ -1,13 +1,16 @@
 from typing import Iterable, Optional
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton, InlineKeyboardMarkup
+
+from src.domain.services.presentation import LexiconBase
 from src.presentation.aiogram.keyboards.types import FriendEntry, PaginationData
 from src.presentation.aiogram.keyboards.callbacks import FriendSelectCallback, FriendFqCallback, PageSelectCallback
 
 
 def create_main_kb(
         friends: Iterable[FriendEntry],
-        pagination_data: Optional[PaginationData]
+        pagination_data: Optional[PaginationData],
+        lexicon: LexiconBase
 ) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
@@ -18,8 +21,10 @@ def create_main_kb(
         builder.row(
             InlineKeyboardButton(text=friend.name,
                                  callback_data=FriendSelectCallback(user_id=friend.user_id).pack()),
-            InlineKeyboardButton(text=('Уже послан' if friend.is_already_sent else 'Послать'),
-                                 callback_data=FriendFqCallback(user_id=friend.user_id, page=page).pack())
+            InlineKeyboardButton(
+                text=(lexicon.get('kb_main_menu_already_sent') if friend.is_already_sent
+                      else lexicon.get('kb_main_menu_send_fq')),
+                callback_data=FriendFqCallback(user_id=friend.user_id, page=page).pack())
         )
 
     if pagination_data:

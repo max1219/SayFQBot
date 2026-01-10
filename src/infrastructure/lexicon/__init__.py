@@ -1,0 +1,1 @@
+from .lexicon_factory import create_lexicon
