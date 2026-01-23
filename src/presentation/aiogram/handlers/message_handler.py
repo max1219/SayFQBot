@@ -13,7 +13,7 @@ router = Router()
 
 @router.message()
 async def handler(message: Message, send_menu_service: SendMenuService, lexicon: LexiconBase):
-    await message.answer(text='8=э', reply_markup=create_send_user_kb(lexicon))
+    await message.answer(text='---', reply_markup=create_send_user_kb(lexicon))
     await send_menu_service.send_menu(message.from_user.id, 1)
 
 @router.callback_query(PageSelectCallback.filter())
