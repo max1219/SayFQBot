@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.domain.dto.responses.fq import SendFqStatus
+from src.domain.dto.responses.fq import SendFqStatus, ResponseFqStatus
 
 
 class IFqService(ABC):
@@ -8,7 +8,6 @@ class IFqService(ABC):
     async def send_fq(self, id_from: int, id_to: int) -> SendFqStatus:
         pass
 
-    # Нужен ли?
-    # @abstractmethod
-    # def resend_fq(self, id_from: int, id_to: int) -> SendFqStatus:
-    #     pass
+    @abstractmethod
+    async def response_fq(self, id_from: int, id_to: int) -> ResponseFqStatus:
+        pass

@@ -40,9 +40,9 @@ async def create_and_add_services(bot: Bot, dp: Dispatcher, config: Config):
 
     if config.bot.debug_features:
         friendship_message_sender = ProxyFriendshipMessageSender(
-            friendship_message_sender, fake_friendship_message_sender, lambda i: i > 1000)
+            friendship_message_sender, fake_friendship_message_sender, lambda i: i > 100)
         fq_message_sender = ProxyFqMessageSender(
-            fq_message_sender, fake_fq_message_sender, lambda i: i > 1000)
+            fq_message_sender, fake_fq_message_sender, lambda i: i > 100)
 
     fq_limits_provider = ConstantFqLimitProvider(2)
     fq_limits_service = SingleFqLimitsService(fq_limits_provider, fq_repo)

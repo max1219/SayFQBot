@@ -1,6 +1,6 @@
 from src.domain.repositories import IFriendshipRepo, IUserRepo, IFqRepo
 from src.domain.message_senders import IFqMessageSender
-from src.domain.dto.responses.fq import SendFqStatus
+from src.domain.dto.responses.fq import SendFqStatus, ResponseFqStatus
 from src.domain.services import IFqService, IFqLimitsService
 from src.domain.repositories.operation_results import AddFqStatus
 
@@ -42,3 +42,20 @@ class FqService(IFqService):
         else:
             await self._fq_repo.remove_fq(id_from, id_to)
             return SendFqStatus.CannotSendMessage
+
+    async def response_fq(self, id_from: int, id_to: int) -> ResponseFqStatus:
+        if not await self._user_repo.is_exists(id_to):
+            return ResponseFqStatus.UserNotFound
+
+        if not await self._friendship_repo.check_friendship(id_from, id_to):
+            return ResponseFqStatus.NotFriend
+
+        name_from = (await self._user_repo.get_by_id(id_from)).name
+
+        if await self._message_sender.response_fq(id_from, id_to, name_from):
+            return ResponseFqStatus.Success
+        else:
+            await self._fq_repo.remove_fq(id_from, id_to)
+            return ResponseFqStatus.CannotSendMessage
+
+

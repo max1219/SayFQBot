@@ -2,9 +2,9 @@ from aiogram import Router
 from aiogram.types import CallbackQuery
 
 from src.domain.services import IFqService
-from src.domain.dto.responses.fq import SendFqStatus
+from src.domain.dto.responses.fq import SendFqStatus, ResponseFqStatus
 from src.domain.services.presentation import LexiconBase
-from src.presentation.aiogram.keyboards.callbacks import FriendFqCallback
+from src.presentation.aiogram.keyboards.callbacks import FriendFqCallback, ResponseFqCallback
 from src.presentation.aiogram.services import SendMenuService
 
 router = Router()
@@ -32,3 +32,22 @@ async def cb_friend_fq(callback: CallbackQuery, callback_data: FriendFqCallback,
             await send_menu_service.send_menu(callback.from_user.id, callback_data.page, callback)
         case SendFqStatus.TotalLimitExceeded:
             await callback.answer(lexicon.get('fq_limit_total_exceeded'))
+
+@router.callback_query(ResponseFqCallback.filter())
+async def cb_response_fq(callback: CallbackQuery, callback_data: FriendFqCallback,
+                       fq_service: IFqService,
+                       lexicon: LexiconBase):
+    status: ResponseFqStatus = await fq_service.response_fq(callback.from_user.id, callback_data.user_id)
+    await callback.message.edit_reply_markup(reply_markup=None)
+    match status:
+        case ResponseFqStatus.Success:
+            await callback.answer(lexicon.get('fq_resp_success'))
+        case ResponseFqStatus.CannotSendMessage:
+            await callback.answer(lexicon.get('fq_cant_send_message'),
+                                  show_alert=True)
+        case ResponseFqStatus.NotFriend:
+            await callback.answer(lexicon.get('fq_not_friends'),
+                                  show_alert=True)
+        case ResponseFqStatus.UserNotFound:
+            await callback.answer(lexicon.get('fq_user_not_found'),
+                                  show_alert=True)

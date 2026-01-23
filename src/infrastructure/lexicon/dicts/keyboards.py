@@ -12,6 +12,8 @@ lexicon = {
     'kb_friend_dont_accept': 'Не, нахуй',
 
     'kb_friend_delete_confirm': 'Да, а че еще делать?',
-    'kb_friend_remove_not_confirm': 'Не, лучше завтра'
+    'kb_friend_remove_not_confirm': 'Не, лучше завтра',
+
+    'kb_fq_response': 'Послать ответку'
 
 }

@@ -20,3 +20,6 @@ class FriendDeleteCallback(CallbackData, prefix='friend_delete'):
 
 class FriendConfirmDeleteCallback(CallbackData, prefix='friend_confirm_delete'):
     user_id: int
+
+class ResponseFqCallback(CallbackData, prefix='response_fq'):
+    user_id: int

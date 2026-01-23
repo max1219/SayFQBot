@@ -19,3 +19,10 @@ class ProxyFqMessageSender(IFqMessageSender):
             return await self._real_message_sender.send_fq(id_from, id_to, name_from)
         self._logger.info(f'Сообщение пользователю {id_to} направлено на fake sender')
         return await self._fake_message_sender.send_fq(id_from, id_to, name_from)
+
+    async def response_fq(self, id_from: int, id_to: int, name_from: str) -> bool:
+        if self._reality_predicate(id_to):
+            return await self._real_message_sender.response_fq(id_from, id_to, name_from)
+        self._logger.info(f'Сообщение пользователю {id_to} направлено на fake sender')
+        return await self._fake_message_sender.response_fq(id_from, id_to, name_from)
+
